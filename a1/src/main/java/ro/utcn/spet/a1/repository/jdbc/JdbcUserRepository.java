@@ -62,7 +62,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private void update(User user){
-        template.update("UPDATE FROM user SET username =?, password=? WHERE id= ?",
+        template.update("UPDATE user SET username =?, password=? WHERE id= ?",
                 user.getUsername(),user.getPassword(),user.getId());
     }
 

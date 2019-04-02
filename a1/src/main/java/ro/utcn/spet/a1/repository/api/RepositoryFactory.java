@@ -8,4 +8,5 @@ public interface RepositoryFactory {
 
     TagRepository createTagRepository();
 
+    AnswerRepository createAnswerRepository();
 }

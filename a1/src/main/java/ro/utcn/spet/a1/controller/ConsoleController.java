@@ -5,9 +5,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import ro.utcn.spet.a1.exception.QuestionNotFoundException;
 import ro.utcn.spet.a1.exception.TagNotFoundException;
+import ro.utcn.spet.a1.model.Answer;
 import ro.utcn.spet.a1.model.Question;
 import ro.utcn.spet.a1.model.Tag;
 import ro.utcn.spet.a1.model.User;
+import ro.utcn.spet.a1.service.AnswerService;
 import ro.utcn.spet.a1.service.QuestionService;
 import ro.utcn.spet.a1.service.TagService;
 import ro.utcn.spet.a1.service.UserService;
@@ -22,6 +24,7 @@ public class ConsoleController implements CommandLineRunner {
     private final UserService userService;
     private final QuestionService questionService;
     private final TagService tagService;
+    private final AnswerService answerService;
     private User user;
     @Override
     public void run(String... args) throws Exception {
@@ -59,6 +62,18 @@ public class ConsoleController implements CommandLineRunner {
             case "filtertag":
                 handleFilterTag();
                 return false;
+            case "answer":
+                handleAddAnswer();
+                return false;
+            case "listquestion":
+                handleListQuestionAnswer();
+                return false;
+            case "editanswer":
+                handleEditAnswer();
+                return false;
+            case "deleteanswer":
+                handleDeleteAnswer();
+                return false;
             case "exit":
                 return true;
             default:
@@ -86,9 +101,10 @@ public class ConsoleController implements CommandLineRunner {
 
     private void handleAdd() {
         print("Title: ");
-        String title = scanner.next().trim();
+        String something=scanner.nextLine();
+        String title = scanner.nextLine();
         print("Text: ");
-        String body = scanner.next().trim();
+        String body = scanner.nextLine();
         String username = user.getUsername();
         Question question = questionService.addQuestion(title,body, username);
         print("Created question: " + question + ".");
@@ -101,7 +117,7 @@ public class ConsoleController implements CommandLineRunner {
             try {
                 finish = handleAddTag(tag, question.getId());
             } catch (TagNotFoundException tagNotFoundException) {
-                print("The student with the given ID was not found!");
+                print("This tag was not found!");
             }
 
         }
@@ -134,6 +150,50 @@ public class ConsoleController implements CommandLineRunner {
         String text=scanner.next().trim();
         Tag tag=tagService.addTag(text);
         questionService.findByTag(tag).forEach(s->print(s.toString()));
+    }
+
+    private void handleAddAnswer(){
+        print("Question id: ");
+        int id=scanner.nextInt();
+        print("Write your answer: ");
+        String something=scanner.nextLine();
+        String text=scanner.nextLine();
+        Answer answer=answerService.addAnswer(text,this.user.getUsername(),id);
+        questionService.addAnswerToQuestion(id,answer);
+        print("Created answer: " + answer + ".");
+    }
+
+    private void handleListQuestionAnswer(){
+        print("Question id: ");
+        int id=scanner.nextInt();
+        Question question=questionService.findQuestion(id);
+        print("Title: "+question.getTitle());
+        print("Text: "+question.getBody());
+        print("Tags: ");
+        for(Tag tag:question.getTags()){
+            print(tag.toString());
+        }
+        print("Answers: ");
+        for(Answer answer: question.getAnswers()){
+            print(answer.toString());
+        }
+    }
+
+    private void handleEditAnswer(){
+        print("Answer id: ");
+        int id=scanner.nextInt();
+        print("New answer: ");
+        String something=scanner.nextLine();
+        String text=scanner.nextLine();
+        String message=answerService.editAnswer(id,text,this.user.getUsername());
+        print(message);
+    }
+
+    private void handleDeleteAnswer(){
+        print("Answer id: ");
+        int id=scanner.nextInt();
+        String message=answerService.deleteAnswer(id,this.user.getUsername());
+        print(message);
     }
 
     private void print(String value) {

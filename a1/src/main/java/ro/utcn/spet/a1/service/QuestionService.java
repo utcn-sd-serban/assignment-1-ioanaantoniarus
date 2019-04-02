@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.utcn.spet.a1.exception.QuestionNotFoundException;
+import ro.utcn.spet.a1.model.Answer;
 import ro.utcn.spet.a1.model.Question;
 import ro.utcn.spet.a1.model.Tag;
 import ro.utcn.spet.a1.repository.api.QuestionRepository;
@@ -32,6 +33,12 @@ public class QuestionService {
         LocalDateTime localDateTime= LocalDateTime.now();
         String date=localDateTime.format(formatter);
         return repositoryFactory.createQuestionRepository().save(new Question(title, body, username,date));
+    }
+
+    public Question findQuestion(int id){
+        QuestionRepository repository = repositoryFactory.createQuestionRepository();
+        Question question=repository.findById(id).orElseThrow(QuestionNotFoundException::new);
+        return question;
     }
 
     @Transactional
@@ -66,6 +73,17 @@ public class QuestionService {
         List<Tag> tags=question.getTags();
         tags.add(tag);
         question.setTags(tags);
+        repository.save(question);
+        return question;
+    }
+
+    @Transactional
+    public Question addAnswerToQuestion(int id, Answer answer){
+        QuestionRepository repository = repositoryFactory.createQuestionRepository();
+        Question question=repository.findById(id).orElseThrow(QuestionNotFoundException::new);
+        List<Answer> answers=question.getAnswers();
+        answers.add(answer);
+        question.setAnswers(answers);
         repository.save(question);
         return question;
     }

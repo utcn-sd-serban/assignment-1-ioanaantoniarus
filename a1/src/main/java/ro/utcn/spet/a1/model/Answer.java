@@ -11,6 +11,14 @@ import lombok.NoArgsConstructor;
 public class Answer {
     private int id;
     private String body;
-    private int userId;
+    private String username;
+    private String date;
     private int questionId;
+
+    public Answer(String body, String username, String date, int questionId) {
+        this.body = body;
+        this.username=username;
+        this.date=date;
+        this.questionId=questionId;
+    }
 }

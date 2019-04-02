@@ -25,3 +25,12 @@ CREATE TABLE IF NOT EXISTS question_tag(
   FOREIGN KEY (id_tag) REFERENCES tag(id),
   FOREIGN KEY (id_question) REFERENCES question(id)
 );
+
+CREATE TABLE IF NOT EXISTS answer(
+  id int NOT NULL AUTO_INCREMENT,
+  body VARCHAR(100),
+  username VARCHAR(32) NOT NULL,
+  date VARCHAR(64),
+  question_id int NOT NULL,
+  PRIMARY KEY(id)
+);

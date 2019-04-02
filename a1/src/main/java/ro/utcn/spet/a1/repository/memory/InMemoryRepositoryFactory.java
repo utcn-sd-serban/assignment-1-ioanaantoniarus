@@ -2,30 +2,33 @@ package ro.utcn.spet.a1.repository.memory;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import ro.utcn.spet.a1.repository.api.QuestionRepository;
-import ro.utcn.spet.a1.repository.api.RepositoryFactory;
-import ro.utcn.spet.a1.repository.api.TagRepository;
-import ro.utcn.spet.a1.repository.api.UserRepository;
+import ro.utcn.spet.a1.repository.api.*;
 
 @Component
 @ConditionalOnProperty(name = "a1.repository-type", havingValue = "MEMORY")
 public class InMemoryRepositoryFactory implements RepositoryFactory {
-    private final InMemoryQuestionRepository repositoryQ = new InMemoryQuestionRepository();
-    private final InMemoryUserRepository repositoryU= new InMemoryUserRepository();
-    private final InMemoryTagRepository repositoryT=new InMemoryTagRepository();
+    private final InMemoryQuestionRepository questionRepository = new InMemoryQuestionRepository();
+    private final InMemoryUserRepository userRepository= new InMemoryUserRepository();
+    private final InMemoryTagRepository tagRepository=new InMemoryTagRepository();
+    private final InMemoryAnswerRepository answerRepository=new InMemoryAnswerRepository();
 
     @Override
     public QuestionRepository createQuestionRepository() {
-        return repositoryQ;
+        return questionRepository;
     }
 
     @Override
     public UserRepository createUserRepository() {
-        return repositoryU;
+        return userRepository;
     }
 
     @Override
     public TagRepository createTagRepository() {
-        return repositoryT;
+        return tagRepository;
+    }
+
+    @Override
+    public AnswerRepository createAnswerRepository() {
+        return answerRepository;
     }
 }

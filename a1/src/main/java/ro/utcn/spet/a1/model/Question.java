@@ -16,8 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Question {
-   // @Id
-    //@GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     private String title;
     private String body;
@@ -26,6 +26,8 @@ public class Question {
 
     List<Tag> tags;
 
+    List<Answer> answers;
+
     public Question(int id, String title, String body, String username, String date){
         this.id=id;
         this.title=title;
@@ -33,6 +35,7 @@ public class Question {
         this.username=username;
         this.date=date;
         this.tags=new ArrayList<Tag>();
+        this.answers=new ArrayList<Answer>();
     }
     public Question(String title, String body, String username, String date){
         this.title=title;
@@ -40,6 +43,7 @@ public class Question {
         this.username=username;
         this.date=date;
         this.tags=new ArrayList<Tag>();
+        this.answers=new ArrayList<Answer>();
     }
 
 }

@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ro.utcn.spet.a1.repository.api.QuestionRepository;
-import ro.utcn.spet.a1.repository.api.RepositoryFactory;
-import ro.utcn.spet.a1.repository.api.TagRepository;
-import ro.utcn.spet.a1.repository.api.UserRepository;
+import ro.utcn.spet.a1.repository.api.*;
 
 @Component
 @RequiredArgsConstructor
@@ -29,4 +26,11 @@ public class JdbcRepositoryFactory implements RepositoryFactory {
     public TagRepository createTagRepository() {
         return new JdbcTagRepository(template);
     }
+
+    @Override
+    public AnswerRepository createAnswerRepository() {
+        return new JdbcAnswerRepository(template);
+    }
+
+
 }

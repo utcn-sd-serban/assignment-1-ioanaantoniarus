@@ -3,6 +3,7 @@ package ro.utcn.spet.a1.repository.jdbc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import ro.utcn.spet.a1.model.Answer;
 import ro.utcn.spet.a1.model.Question;
 import ro.utcn.spet.a1.model.Tag;
 import ro.utcn.spet.a1.repository.api.QuestionRepository;
@@ -35,7 +36,14 @@ public class JdbcQuestionRepository implements QuestionRepository {
         List<Question> questions=template.query("SELECT * FROM question WHERE id= ?",
                 new Object[]{ id },
                 new QuestionMapper());
-        return questions.isEmpty() ? Optional.empty() : Optional.of(questions.get(0));
+        if(questions.isEmpty()){
+            return Optional.empty();
+        }
+        else{
+            questions.get(0).setTags(findTags(questions.get(0).getId()));
+            questions.get(0).setAnswers(findQuestionAnswer(questions.get(0).getId()));
+            return Optional.of(questions.get(0));
+        }
     }
 
     @Override
@@ -48,22 +56,30 @@ public class JdbcQuestionRepository implements QuestionRepository {
         List<Question> questions=template.query("SELECT * FROM question", new QuestionMapper());
         for(Question question: questions){
             question.setTags(findTags(question.getId()));
+            question.setAnswers(findQuestionAnswer(question.getId()));
         }
         return questions;
     }
 
     @Override
     public List<Question> findByTitle(String title) {
-        List<Question> questions= template.query("SELECT * FROM question WHERE title LIKE '%?%'",new Object[]{title}, new QuestionMapper());
+        List<Question> questions= template.query("SELECT * FROM question WHERE title LIKE CONCAT('%' , ? , '%')",new Object[]{title}, new QuestionMapper());
         for(Question question: questions){
             question.setTags(findTags(question.getId()));
+            question.setAnswers(findQuestionAnswer(question.getId()));
         }
         return questions;
     }
 
     @Override
     public List<Question> findByTag(Tag tag) {
-        return null;
+        List<Question> questions=template.query("SELECT * from question INNER JOIN question_tag ON question.id=question_tag.id_question WHERE question_tag.id_tag=?", new Object[]{tag.getId()},
+                new QuestionMapper());
+        for(Question question:questions){
+            question.setTags(findTags(question.getId()));
+            question.setAnswers(findQuestionAnswer(question.getId()));
+        }
+        return questions;
     }
 
     private int insert(Question question){
@@ -79,8 +95,15 @@ public class JdbcQuestionRepository implements QuestionRepository {
     }
 
     private List<Tag> findTags(int id){
-        return  template.query("SELECT tag.id name FROM question_tag INNER JOIN tag ON tag.id=question_tag.id WHERE question.id=? ",new Object[]{id},
+        return  template.query("SELECT * FROM tag INNER JOIN question_tag ON tag.id=question_tag.id_tag WHERE question_tag.id_question=? ",new Object[]{id},
                 new TagMapper());
+    }
+
+    public List<Answer> findQuestionAnswer(int id) {
+        List<Answer> answers=template.query("SELECT * FROM answer WHERE question_id=?",
+                new Object[]{id},
+                new AnswerMapper());
+        return answers;
     }
 
     private void update(Question question){
